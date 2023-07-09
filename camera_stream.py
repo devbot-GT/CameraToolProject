@@ -61,7 +61,7 @@ def cleanup(signal, frame):
     global terminate_signal
     terminate_signal = True
 
-    camera.stop_preview()
+    picamera.PiCamera().close()
     camera.close()
     sys.exit(0)
 
