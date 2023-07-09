@@ -130,7 +130,9 @@ while True:
                     if stream_mode == 'wireless':
                         # Start the Nginx service on the external computer
                         subprocess.run(['sudo', 'service', 'nginx', 'start'])
+                        print('Starting Nginx service and opening web browser')
                         webbrowser.open('http://localhost:8080')
+                        print('http://localhost:8080')
 
                 if event == 'End Camera Stream':
                     # Find the PID of the camera_stream_hdmi.py process
@@ -147,8 +149,7 @@ while True:
                     if stream_mode == 'wireless':
                         # Stop the Nginx service on the external computer
                         subprocess.run(['sudo', 'service', 'nginx', 'stop'])
-                        # Close the web browser
-                        webbrowser.close()
+                        print('Stopping Nginx service')
 
                 if event == 'Send Command':
                     # Send the command to the Raspberry Pi terminal and display the output
