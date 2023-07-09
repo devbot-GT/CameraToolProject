@@ -124,7 +124,7 @@ while True:
 
                 if event == 'Start Camera Stream':
                     # Start the camera stream on the Raspberry Pi
-                    ssh.exec_command(f"python camera_stream.py {camera_mode} {stream_mode}")
+                    ssh.exec_command(f"python Python_Executables/CameraToolProject/camera_stream.py {camera_mode} {stream_mode}")
                     sg.popup('Camera stream started')
 
                     if stream_mode == 'wireless':
@@ -187,10 +187,8 @@ while True:
                         if command == 'ls':
                             # Prepend the current directory to the command
                             command_with_directory = f'{command} {current_directory[1:]}'
-                        elif command.startswith('mkdir') or command.startswith('rm -r'):
-                            command_with_directory = ' '.join(command.split()[:-1]) + ' ' + current_directory[1:] + '/' + command.split()[-1]
                         else:
-                            command_with_directory = ' '.join(command.split()[:-1]) + ' ' + current_directory + '/' + command.split()[-1]
+                            command_with_directory = ' '.join(command.split()[:-1]) + ' ' + current_directory[1:] + '/' + command.split()[-1]
 
                     stdin, stdout, stderr = ssh.exec_command(command_with_directory)
                     output = stdout.read().decode('utf-8')
