@@ -1,6 +1,6 @@
 # CameraToolProject
 
-## *This repository is for the automation of a hybrid DED and CNC camera tool for porpsity analysis.*
+## *This repository is for the automation of a hybrid DED and CNC camera tool for porosity analysis.*
 
 ### test_pi_cam_stream.py is run on a host computer to SSH into the Raspberry Pi and command it for testing.
     There is a psudo terminal with log and command inputs to navigate directories and run python scripts.
