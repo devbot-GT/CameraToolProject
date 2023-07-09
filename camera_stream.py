@@ -19,32 +19,42 @@ terminate_signal = False
 
 # Function to start the camera stream
 def start_camera_stream(camera_mode, stream_mode):
+    print(f'camera_mode: {camera_mode}')
+    print(f'stream_mode: {stream_mode}')
     global terminate_signal, camera
 
-    # Initialize the camera
-    camera = picamera.PiCamera()
-    camera.resolution = (4056, 3040) if camera_mode == 3 else (2028, 1080)
+    try:
+        # Initialize the camera
+        camera = picamera.PiCamera()
+        camera.resolution = (4056, 3040) if camera_mode == 3 else (2028, 1080)
 
-    if stream_mode == 'HDMI':
-        camera.start_preview(fullscreen=False, window=(0, 0, 640, 480))
-    elif stream_mode == 'wireless':
-        # Start the HTTP streaming server in a separate thread
-        server_thread = threading.Thread(target=start_http_server)
-        server_thread.start()
+        if stream_mode == 'HDMI':
+            camera.start_preview(fullscreen=False, window=(0, 0, 640, 480))
+        elif stream_mode == 'wireless':
+            # Start the HTTP streaming server in a separate thread
+            server_thread = threading.Thread(target=start_http_server)
+            server_thread.start()
 
-        # Enable network streaming (HTTP)
-        camera.start_recording('/dev/null', format='h264', splitter_port=2)
-        time.sleep(2)  # Wait for the splitter to initialize
-        camera.start_recording(HTTPMotionOutput(camera), format='mjpeg', splitter_port=1, resize=(640, 480))
+            # Enable network streaming (HTTP)
+            camera.start_recording('/dev/null', format='h264', splitter_port=2)
+            time.sleep(2)  # Wait for the splitter to initialize
+            camera.start_recording(HTTPMotionOutput(camera), format='mjpeg', splitter_port=1, resize=(640, 480))
+            print('Started streaming wirelessly on port 8000')
 
-    # Register the signal handler for proper termination
-    signal.signal(signal.SIGTERM, cleanup)
+        # Register the signal handler for proper termination
+        signal.signal(signal.SIGTERM, cleanup)
 
-    # Keep the script running indefinitely
-    while not terminate_signal:
-        time.sleep(1)
+        # Keep the script running indefinitely
+        while not terminate_signal:
+            time.sleep(1)
 
-    cleanup(None, None)
+    finally:
+        cleanup(None, None)
+
+# Signal handler for KeyboardInterrupt (Ctrl+C)
+def cleanup_keyboard_interrupt(signal, frame):
+    print("KeyboardInterrupt received. Stopping camera stream.")
+    cleanup(signal, frame)
 
 # Signal handler to stop the camera stream
 def cleanup(signal, frame):
