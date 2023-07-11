@@ -13,6 +13,7 @@ from http.server import BaseHTTPRequestHandler, HTTPServer
 import threading
 import signal
 import sys
+import subprocess
 
 # Global variable for terminating the camera stream
 terminate_signal = False
@@ -29,7 +30,9 @@ def start_camera_stream(camera_mode, stream_mode):
         camera.resolution = (4056, 3040) if camera_mode == 3 else (2028, 1080)
 
         if stream_mode == 'HDMI':
-            camera.start_preview(fullscreen=False, window=(0, 0, 640, 480))
+            # camera.start_preview(fullscreen=False, window=(0, 0, 640, 480))
+            command = f'raspivid --mode {camera_mode} -t 0'
+            subprocess.run(command, shell=True)
         elif stream_mode == 'wireless':
             # Start the HTTP streaming server in a separate thread
             server_thread = threading.Thread(target=start_http_server)
@@ -61,8 +64,8 @@ def cleanup(signal, frame):
     global terminate_signal
     terminate_signal = True
 
-    picamera.PiCamera().close()
-    camera.close()
+    # picamera.PiCamera().close()
+    # camera.close()
     sys.exit(0)
 
 # Function to start the HTTP streaming server
