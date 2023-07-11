@@ -48,7 +48,7 @@ while True:
         # Retrieve the SSH connection details from the input values
         ip = values['-IP-']
         if ip == 'beans':
-            ip = '192.168.86.94'
+            ip = '192.168.86.97'
             username = 'devbot'
             password = 'CameraToolProject'
         else:
@@ -92,8 +92,9 @@ while True:
             terminal_log = f'{username}@raspberrypi:~ $ '
             window['-TERMINAL_OUTPUT-'].update(terminal_log.strip())
 
-            camera_mode = 3;
+            camera_mode = 3
             stream_mode = 'wireless'
+            streaming = False
 
             while True:
                 event, values = window.read()
@@ -123,33 +124,37 @@ while True:
                     stream_mode = 'HDMI'
 
                 if event == 'Start Camera Stream':
-                    # Start the camera stream on the Raspberry Pi
-                    ssh.exec_command(f"python Python_Executables/CameraToolProject/camera_stream.py {camera_mode} {stream_mode}")
-                    sg.popup('Camera stream started')
+                    if not streaming:
+                        streaming = True
+                        # Start the camera stream on the Raspberry Pi
+                        ssh.exec_command(f"python Python_Executables/CameraToolProject/camera_stream.py {camera_mode} {stream_mode}")
+                        sg.popup('Camera stream started')
 
-                    if stream_mode == 'wireless':
-                        # Start the Nginx service on the external computer
-                        subprocess.run(['sudo', 'service', 'nginx', 'start'])
-                        print('Starting Nginx service and opening web browser')
-                        webbrowser.open('http://localhost:8080')
-                        print('http://localhost:8080')
+                        if stream_mode == 'wireless':
+                            # Start the Nginx service on the external computer
+                            subprocess.run(['sudo', 'service', 'nginx', 'start'])
+                            print('Starting Nginx service and opening web browser')
+                            webbrowser.open('http://localhost:8080')
+                            print('http://localhost:8080')
 
                 if event == 'End Camera Stream':
-                    # Find the PID of the camera_stream_hdmi.py process
-                    pid_command = "pgrep -f camera_stream.py"
-                    _, stdout, _ = ssh.exec_command(pid_command)
-                    pid = stdout.read().decode().strip()
+                    if streaming:
+                        streaming = False
+                        # Find the PID of the camera_stream_hdmi.py process
+                        pid_command = "pgrep -f camera_stream.py"
+                        _, stdout, _ = ssh.exec_command(pid_command)
+                        pid = stdout.read().decode().strip()
 
-                    # Send the termination signal to the camera_stream_hdmi.py process
-                    terminate_command = f"kill -SIGTERM {pid}"
-                    ssh.exec_command(terminate_command)
+                        # Send the termination signal to the camera_stream_hdmi.py process
+                        terminate_command = f"kill -SIGTERM {pid}"
+                        ssh.exec_command(terminate_command)
 
-                    sg.popup('Camera stream stopped')
+                        sg.popup('Camera stream stopped')
 
-                    if stream_mode == 'wireless':
-                        # Stop the Nginx service on the external computer
-                        subprocess.run(['sudo', 'service', 'nginx', 'stop'])
-                        print('Stopping Nginx service')
+                        if stream_mode == 'wireless':
+                            # Stop the Nginx service on the external computer
+                            subprocess.run(['sudo', 'service', 'nginx', 'stop'])
+                            print('Stopping Nginx service')
 
                 if event == 'Send Command':
                     # Send the command to the Raspberry Pi terminal and display the output
