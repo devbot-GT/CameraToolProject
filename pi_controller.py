@@ -211,7 +211,7 @@ while True:
                         if not light:
                             light = True
                             # Construct the command with the initial brightness value
-                            ssh.exec_command(f'python led_ring_light.py {brightness}')
+                            ssh.exec_command(f'python Python_Executables/CameraToolProject/led_ring_light.py {brightness}')
                 
                     if event == 'LED Ring Light OFF':
                         if light:
