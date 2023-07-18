@@ -11,7 +11,7 @@ import sys
 
 # GPIO pin numbers
 POWER_PIN = 2
-PWM_PIN = 12
+PWM_PIN = 18
 
 # Set up GPIO pin 2 as an output
 power = DigitalOutputDevice(POWER_PIN)
