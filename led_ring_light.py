@@ -7,12 +7,21 @@ Created on Tue Jul 11 13:46:59 2023
 """
 
 from gpiozero import PWMLED
+import RPi.GPIO as GPIO
 import sys
 
-# GPIO pin number for the PWM signal
+# Set up GPIO mode and warnings
+GPIO.setmode(GPIO.BCM)
+GPIO.setwarnings(False)
+
+# GPIO pin numbers
+POWER_PIN = 2
 PWM_PIN = 12
 
-# Create a PWMLED object for controlling the LED ring light
+# Set up GPIO pin 2 as an output
+GPIO.setup(POWER_PIN, GPIO.OUT)
+
+# Set up PWM on GPIO pin 12 with a frequency of 300 Hz
 pwm_led = PWMLED(PWM_PIN, frequency=300)
 
 # Function to set the brightness of the LED ring light
@@ -41,3 +50,4 @@ except KeyboardInterrupt:
 
 # Clean up resources
 pwm_led.close()
+GPIO.cleanup()
