@@ -17,8 +17,8 @@ PWM_PIN = 18
 # Set up GPIO pin 2 as an output
 power = DigitalOutputDevice(POWER_PIN)
 
-# Set up PWM on GPIO pin 12 with a frequency of 120 Hz
-pwm_led = PWMLED(PWM_PIN, frequency=120)
+# Set up PWM on GPIO pin 12 with a frequency of 1000 Hz
+pwm_led = PWMLED(PWM_PIN, frequency=1000)
 
 def handle_termination(sig, frame):
     print("\nTerminating the LED ring light script...")
