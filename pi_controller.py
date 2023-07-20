@@ -109,8 +109,7 @@ while True:
                     [sg.Text('LED Ring Light Control', font='Any 20')],
                     [sg.Button('LED Ring Light ON', size=(20, 1), font='Any 15'),
                      sg.Button('LED Ring Light OFF', size=(20, 1), font='Any 15')],
-                    [sg.Slider(range=(0, 1), orientation='h', resolution=0.01, default_value=0.5, size=(20, 15), key='-SLIDER-', font='Any 15'),
-                     sg.InputText(size=(8, 1), key='-BRIGHTNESS-', font='Any 15', disabled=True)]
+                    [sg.Slider(range=(0, 1), orientation='h', resolution=0.01, default_value=0.5, size=(20, 15), key='-SLIDER-', font='Any 15')]
                 ]
 
                 terminal_layout = [
@@ -142,6 +141,10 @@ while True:
                     event, values = window.read()
 
                     if event == sg.WINDOW_CLOSED:
+                        if streaming:
+                            stop_camera_stream(ssh)
+                        if light:
+                            ssh.exec_command('python Python_Executables/CameraToolProject/led_toggle.py off')
                         # Cleanup GPIO resources before closing the program
                         cleanup_gpio(ssh)
                         break
@@ -211,12 +214,12 @@ while True:
                         if not light:
                             light = True
                             # Construct the command with the initial brightness value
-                            ssh.exec_command(f'python Python_Executables/CameraToolProject/led_ring_light.py {brightness}')
+                            ssh.exec_command(f'python Python_Executables/CameraToolProject/led_toggle.py {brightness}')
                 
                     if event == 'LED Ring Light OFF':
                         if light:
                             light = False
-                            ssh.exec_command('off')
+                            ssh.exec_command('python Python_Executables/CameraToolProject/led_toggle.py off')
                 
                     if event == '-SLIDER-':
                         # Update the brightness text box with the current slider value
@@ -224,7 +227,7 @@ while True:
                         # Send the new brightness level to the Raspberry Pi
                         brightness = int(values['-SLIDER-'])
                         if light:
-                            ssh.exec_command(str(brightness))
+                            ssh.exec_command(f'python Python_Executables/CameraToolProject/led_toggle.py {brightness}')
 
                     if event == 'Send Command':
                         # Send the command to the Raspberry Pi terminal and display the output
