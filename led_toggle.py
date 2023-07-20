@@ -39,3 +39,13 @@ else:
     brightness = int(brightness)
     # Map the brightness value (0-100) to the PWM value (0-1)
     pwm_led.value = brightness / 100
+    # Keep the led on at this brightness
+    try:
+        while True:
+            # The script will listen for incoming commands and adjust the brightness
+            pass
+    
+    except KeyboardInterrupt:
+        pass
+    finally:
+        print("Exiting the LED ring light script...")
