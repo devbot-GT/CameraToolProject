@@ -17,12 +17,13 @@ PWM_PIN = 18
 power = DigitalOutputDevice(POWER_PIN)
 
 # Set up PWM on GPIO pin 12 with a frequency of 120 Hz
-pwm_led = PWMLED(PWM_PIN, frequency=120)
+pwm_led = PWMLED(PWM_PIN, frequency=1000)
 
 # Function to set the brightness of the LED ring light
 def set_brightness(brightness):
     # Map the brightness value (0-100) to the PWM value (0-1)
     pwm_led.value = brightness / 100
+    print(f'Brightness Changed to: {brightness}')
 
 def start_ring_light(brightness):
     # Set the initial brightness of the LED and turn on
@@ -49,6 +50,8 @@ def start_ring_light(brightness):
 # Get brightness from arg and illuminate the ring light
 brightness = int(sys.argv[1])
 start_ring_light(brightness)
+
+print('Turning off LED Ring Light')
 
 # Clean up resources
 pwm_led.close()
