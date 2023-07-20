@@ -31,10 +31,11 @@ signal.signal(signal.SIGINT, handle_termination)
 signal.signal(signal.SIGTERM, handle_termination)
 
 # Get brightness from arg and illuminate the ring light
-brightness = int(sys.argv[1])
+brightness = sys.argv[1]
 if brightness == 'off':
     pwm_led.close()
     power.close()
 else:
+    brightness = int(brightness)
     # Map the brightness value (0-100) to the PWM value (0-1)
     pwm_led.value = brightness / 100
