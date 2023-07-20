@@ -144,6 +144,7 @@ while True:
                         if streaming:
                             stop_camera_stream(ssh)
                         if light:
+                            ssh.exec_command('pkill -P $pid')
                             ssh.exec_command('python Python_Executables/CameraToolProject/led_toggle.py off')
                         # Cleanup GPIO resources before closing the program
                         cleanup_gpio(ssh)
@@ -214,11 +215,13 @@ while True:
                         if not light:
                             light = True
                             # Construct the command with the initial brightness value
-                            ssh.exec_command(f'python Python_Executables/CameraToolProject/led_toggle.py {brightness}')
+                            ssh.exec_command(f'python Python_Executables/CameraToolProject/led_toggle.py {brightness} &')
+                            ssh.exec_command('pid=$!')
                 
                     if event == 'LED Ring Light OFF':
                         if light:
                             light = False
+                            ssh.exec_command('pkill -P $pid')
                             ssh.exec_command('python Python_Executables/CameraToolProject/led_toggle.py off')
                 
                     if event == '-SLIDER-':
@@ -227,7 +230,9 @@ while True:
                         # Send the new brightness level to the Raspberry Pi
                         brightness = int(values['-SLIDER-'])
                         if light:
-                            ssh.exec_command(f'python Python_Executables/CameraToolProject/led_toggle.py {brightness}')
+                            ssh.exec_command('pkill -P $pid')
+                            ssh.exec_command(f'python Python_Executables/CameraToolProject/led_toggle.py {brightness} &')
+                            ssh.exec_command('pid=$!')
 
                     if event == 'Send Command':
                         # Send the command to the Raspberry Pi terminal and display the output
